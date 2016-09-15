@@ -8,34 +8,30 @@ def read_words(filename):
             words.extend(line.split())
     return words
 
-def print_words(filename):
-    d = {}
-    a = []
+
+def utility(filename, d):
     for i in read_words(filename):
         s = i.lower()
         d[s] = d.get(s, 0) + 1
-    for i in d.items():
-        a.append((i[0], i[1]))
+    return list(d.items())
+
+
+def print_words(filename):
+    d = {}
+    a = utility(filename, d)
     a.sort()
-    for a, b in a:
-        print(a, b)
+    for key, value in a:
+        print(key, value)
+
 
 def print_top(filename):
     d = {}
-    a = []
-    for i in read_words(filename):
-        s = i.lower()
-        d[s] = d.get(s, 0) + 1
-    for i in d.items():
-        a.append((i[1], i[0]))
-    a.sort(reverse = True)
-    k = 0
-    for a, b in a:
-        if k == 20:
-            break
-        k += 1
-        print(b, a)
-        
+    a = utility(filename, d)
+    a.sort(key=lambda x: x[1], reverse=True)
+    for key, value in a[:20]:
+        print(value, key)
+
+
 def main():
     if len(sys.argv) != 3:
         print('usage: ./wordcount.py {--count | --topcount} file')
