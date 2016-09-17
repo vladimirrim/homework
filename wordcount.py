@@ -9,7 +9,8 @@ def read_words(filename):
     return words
 
 
-def utility(filename, d):
+def helper(filename):
+    d={}
     for i in read_words(filename):
         s = i.lower()
         d[s] = d.get(s, 0) + 1
@@ -17,17 +18,15 @@ def utility(filename, d):
 
 
 def print_words(filename):
-    d = {}
-    a = utility(filename, d)
+    a = helper(filename)
     a.sort()
     for key, value in a:
         print(key, value)
 
 
 def print_top(filename):
-    d = {}
-    a = utility(filename, d)
-    a.sort(key=lambda x: x[1], reverse=True)
+    a = helper(filename)
+    a.sort(key=lambda x: -x[1])
     for key, value in a[:20]:
         print(value, key)
 

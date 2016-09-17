@@ -1,9 +1,9 @@
 def verbing(s):
     if len(s) >= 3:
         if s[-3:] == "ing":
-            s += "ly"
+            return s + "ly"
         else:
-            s += "ing"
+            return s + "ing"
     return s
 
 
@@ -16,8 +16,14 @@ def not_bad(s):
 
 
 def front_back(a, b):
-    n1 = int((len(a)+1)/2)
-    n2 = int((len(b)+1)/2)
+    if len(a) % 2 == 0:
+        n1 = int(len(a) / 2)
+    else:
+        n1 = int((len(a) + 1) / 2)
+    if len(b) % 2 == 0:
+        n2 = int(len(b) / 2)
+    else:
+        n2 = int((len(b) + 1) / 2)
     a_front = a[:n1]
     a_back = a[n1:]
     b_front = b[:n2]
