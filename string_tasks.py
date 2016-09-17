@@ -16,14 +16,8 @@ def not_bad(s):
 
 
 def front_back(a, b):
-    if len(a) % 2 == 0:
-        n1 = int(len(a) / 2)
-    else:
-        n1 = int((len(a) + 1) / 2)
-    if len(b) % 2 == 0:
-        n2 = int(len(b) / 2)
-    else:
-        n2 = int((len(b) + 1) / 2)
+    n1 = (len(a) + 1) // 2
+    n2 = (len(a) + 1) // 2
     a_front = a[:n1]
     a_back = a[n1:]
     b_front = b[:n2]

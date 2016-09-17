@@ -9,7 +9,7 @@ def read_words(filename):
     return words
 
 
-def helper(filename):
+def list_init(filename):
     d={}
     for i in read_words(filename):
         s = i.lower()
@@ -18,14 +18,14 @@ def helper(filename):
 
 
 def print_words(filename):
-    a = helper(filename)
+    a = list_init(filename)
     a.sort()
     for key, value in a:
         print(key, value)
 
 
 def print_top(filename):
-    a = helper(filename)
+    a = list_init(filename)
     a.sort(key=lambda x: -x[1])
     for key, value in a[:20]:
         print(value, key)
