@@ -12,8 +12,7 @@ def get_file_hash(filename):
             if not data:
                 break
             h.update(data)
-        value = h.hexdigest()
-    return value
+    return h.hexdigest()
 
 
 def find_duplicates(path):
@@ -23,10 +22,13 @@ def find_duplicates(path):
             if file[0] != '.' and file[1] != '~':
                 current_file = os.path.join(root, file)
                 hash_dict[get_file_hash(current_file)].append(current_file)
+    return hash_dict
+
+
+def print_duplicates(hash_dict):
     for duplicates in hash_dict.values():
         if len(duplicates) > 1:
             print(':'.join(duplicates))
 
-
-find_duplicates(sys.argv[1])
+print_duplicates(find_duplicates(sys.argv[1]))
 
