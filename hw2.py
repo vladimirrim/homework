@@ -3,8 +3,6 @@ import os
 from hashlib import md5
 from collections import defaultdict
 
-path = sys.argv[1]
-
 
 def get_file_hash(filename):
     with open(filename, 'rb') as f:
@@ -18,13 +16,17 @@ def get_file_hash(filename):
     return value
 
 
-hash_dict = defaultdict(list)
-for root, dirs, files in os.walk(path):
-    for file in files:
-        if file[0] != '.' and file[1] != '~':
-            current_file = os.path.join(root, file)
-            hash_dict[get_file_hash(current_file)].append(file)
-for duplicates in hash_dict.values():
-    if len(duplicates) > 1:
-        print(':'.join(duplicates))
+def find_duplicates(path):
+    hash_dict = defaultdict(list)
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            if file[0] != '.' and file[1] != '~':
+                current_file = os.path.join(root, file)
+                hash_dict[get_file_hash(current_file)].append(current_file)
+    for duplicates in hash_dict.values():
+        if len(duplicates) > 1:
+            print(':'.join(duplicates))
+
+
+find_duplicates(sys.argv[1])
 
