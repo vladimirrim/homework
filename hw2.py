@@ -19,7 +19,7 @@ def find_duplicates(path):
     hash_dict = defaultdict(list)
     for root, dirs, files in os.walk(path):
         for file in files:
-            if file[0] != '.' and file[1] != '~':
+            if file[0] != '.' and file[0] != '~':
                 current_file = os.path.join(root, file)
                 if os.path.islink(current_file) is False:
                     hash_dict[get_file_hash(current_file)].append(current_file)
