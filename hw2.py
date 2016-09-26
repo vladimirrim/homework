@@ -21,7 +21,8 @@ def find_duplicates(path):
         for file in files:
             if file[0] != '.' and file[1] != '~':
                 current_file = os.path.join(root, file)
-                hash_dict[get_file_hash(current_file)].append(current_file)
+                if os.path.islink(current_file) is False:
+                    hash_dict[get_file_hash(current_file)].append(current_file)
     return hash_dict
 
 
@@ -30,5 +31,5 @@ def print_duplicates(hash_dict):
         if len(duplicates) > 1:
             print(':'.join(duplicates))
 
-print_duplicates(find_duplicates(sys.argv[1]))
 
+print_duplicates(find_duplicates(sys.argv[1]))
