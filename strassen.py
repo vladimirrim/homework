@@ -6,9 +6,9 @@ def matrix_create():
     k = 2
     while (k < n):
         k *= 2
-    a = np.zeros((k, k))
-    b = np.zeros((k, k))
-    c = np.array([[j for j in input().split()] for i in range(2 * n)])
+    a = np.zeros((k, k), dtype=int)
+    b = np.zeros((k, k), dtype=int)
+    c = np.array([[int(j) for j in input().split()] for i in range(2 * n)])
     a[:n, :n] = c[:n, ]
     b[:n, :n] = c[n:, ]
     return a, b, k, n
@@ -40,7 +40,7 @@ def matrix_mull(a, b, k, n):
         c11 = I + IV - V + VII
         c22 = I + III - II + VI
 
-        c = np.zeros((2 * k, 2 * k))
+        c = np.zeros((2 * k, 2 * k), dtype=int)
         c[:k, :k] = c11
         c[:k, k:] = c12
         c[k:, :k] = c21
