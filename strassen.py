@@ -40,7 +40,7 @@ def matrix_mull(a, b, k, n):
         c11 = I + IV - V + VII
         c22 = I + III - II + VI
 
-        c = np.zeros((2 * k, 2 * k), dtype=int)
+        c = np.zeros((2 * k, 2 * k), dtype=type(a))
         c[:k, :k] = c11
         c[:k, k:] = c12
         c[k:, :k] = c21
