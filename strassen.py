@@ -8,8 +8,7 @@ def matrix_create():
         k *= 2
     a = np.zeros((k, k))
     b = np.zeros((k, k))
-    c = np.zeros((n + n, n))
-    c[...] = np.loadtxt()
+    c = np.array([[j for j in input().split()] for i in range(2 * n)])
     a[:n, :n] = c[:n, ]
     b[:n, :n] = c[n:, ]
     return a, b, k, n
