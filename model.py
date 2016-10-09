@@ -98,8 +98,12 @@ class FunctionCall:
     def evaluate(self, scope):
         function = self.fun_expr.evaluate(scope)
         call_scope = Scope(scope)
-        for op in self.args:
-            call_scope[op] = op.evaluate(scope)
+        k = 0
+        for arg in function.args:
+            op = self.args[k]
+            k += 1
+            call_scope[arg] = op.evaluate(scope)
+
         return function.evaluate(call_scope)
 
 
@@ -185,14 +189,14 @@ if __name__ == "__main__":
     CON = Conditional(con1, [], [])
     print(CON.evaluate(parent).val)
     func = Function([parent[1], parent[2]], [BO1, BO2])
-    f1 = FunctionDefinition('f1', func)
+    f1 = FunctionDefinition(Number(1), func)
     f1.evaluate(parent)
     p = Print(parent['f1'])
     r = Reference('f1')
     son = Scope(parent)
     son['f2'] = Number(4)
-    r2 = Reference('f3')
-    print(r2.evaluate(son).evaluate(son).val)
+    r2 = Reference(Number(1))
+    print(r2.evaluate(son).evaluate(parent).val)
     print(r2.evaluate(parent).val)
     print(r.evaluate(parent).evaluate(parent).val)
     p.evaluate(parent)
