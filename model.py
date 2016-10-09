@@ -6,7 +6,12 @@ class Scope(object):
         if key in self.__dict__:
             return self.__dict__[key]
         else:
-            return self.parent.__dict__[key]
+            if self.parent is not None:
+                if key in self.parent.__dict__:
+                    return self.parent.__dict__[key]
+                else:
+                    return Number(42)
+            return Number(42)
 
     def __setitem__(self, key, value):
         self.__dict__[key] = value
@@ -17,10 +22,7 @@ class Number:
         self.val = value
 
     def evaluate(self, scope):
-        if scope.parent is None:
-            return self
-        else:
-            return self.evaluate(self, scope.parent)
+        return self
 
 
 class Function:
@@ -53,6 +55,7 @@ class Conditional:
     def evaluate(self, scope):
         if self.condition.evaluate(scope).val == 0:
             if self.false is not None:
+                a = Number(42)
                 for op in self.false:
                     a = op.evaluate(scope)
                 return a
@@ -60,6 +63,7 @@ class Conditional:
                 return Number(42)
         else:
             if self.true is not None:
+                a = Number(42)
                 for op in self.true:
                     a = op.evaluate(scope)
                 return a
@@ -178,13 +182,18 @@ if __name__ == "__main__":
     BO2 = BinaryOperation(parent[3], '+', parent[4])
     UO1 = UnaryOperation('!', BO2)
     print(UO1.evaluate(parent).val)
-    CON = Conditional(con1, [BO1])
+    CON = Conditional(con1, [], [])
     print(CON.evaluate(parent).val)
     func = Function([parent[1], parent[2]], [BO1, BO2])
     f1 = FunctionDefinition('f1', func)
     f1.evaluate(parent)
     p = Print(parent['f1'])
     r = Reference('f1')
+    son = Scope(parent)
+    son['f2'] = Number(4)
+    r2 = Reference('f3')
+    print(r2.evaluate(son).evaluate(son).val)
+    print(r2.evaluate(parent).val)
     print(r.evaluate(parent).evaluate(parent).val)
     p.evaluate(parent)
 
