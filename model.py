@@ -52,13 +52,19 @@ class Conditional:
 
     def evaluate(self, scope):
         if self.condition.evaluate(scope).val == 0:
-            for op in self.false:
-                a = op.evaluate(scope)
-            return a
+            if self.false is not None:
+                for op in self.false:
+                    a = op.evaluate(scope)
+                return a
+            else:
+                return Number(42)
         else:
-            for op in self.true:
-                a = op.evaluate(scope)
-            return a
+            if self.true is not None:
+                for op in self.true:
+                    a = op.evaluate(scope)
+                return a
+            else:
+                return Number(42)
 
 
 class Print:
@@ -87,13 +93,9 @@ class FunctionCall:
 
     def evaluate(self, scope):
         function = self.fun_expr.evaluate(scope)
-        new_args = []
-        for op in self.args:
-            new_args.append(op)
-            new_args.append(op.evaluate(scope))
         call_scope = Scope(scope)
-        for op, arg in new_args:
-            call_scope[op] = arg
+        for op in self.args:
+            call_scope[op] = op.evaluate(scope)
         return function.evaluate(call_scope)
 
 
@@ -176,13 +178,13 @@ if __name__ == "__main__":
     BO2 = BinaryOperation(parent[3], '+', parent[4])
     UO1 = UnaryOperation('!', BO2)
     print(UO1.evaluate(parent).val)
-    CON = Conditional(con1, [BO1], [BO2])
+    CON = Conditional(con1, [BO1])
     print(CON.evaluate(parent).val)
     func = Function([parent[1], parent[2]], [BO1, BO2])
     f1 = FunctionDefinition('f1', func)
     f1.evaluate(parent)
     p = Print(parent['f1'])
-    r=Reference('f1')
+    r = Reference('f1')
     print(r.evaluate(parent).evaluate(parent).val)
     p.evaluate(parent)
 
