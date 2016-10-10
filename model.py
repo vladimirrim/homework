@@ -7,10 +7,7 @@ class Scope(object):
             return self.__dict__[key]
         else:
             if self.parent is not None:
-                if key in self.parent.__dict__:
-                    return self.parent.__dict__[key]
-                else:
-                    return Number(42)
+                return self.parent.__getitem__(key)
             return Number(42)
 
     def __setitem__(self, key, value):
@@ -197,6 +194,10 @@ if __name__ == "__main__":
     son['f2'] = Number(4)
     r2 = Reference(Number(1))
     print(r2.evaluate(son).evaluate(parent).val)
+    grandson = Scope(son)
+    grandson['f3'] = Number(3)
+    r3 = Reference(2)
+    print(r3.evaluate(grandson).val)
     print(r2.evaluate(parent).val)
     print(r.evaluate(parent).evaluate(parent).val)
     p.evaluate(parent)
