@@ -28,6 +28,7 @@ class Function:
         self.body = body
 
     def evaluate(self, scope):
+        a = Number(42)
         for op in self.body:
             a = op.evaluate(scope)
         return a
