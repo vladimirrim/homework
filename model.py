@@ -133,17 +133,35 @@ class BinaryOperation:
         if self.op == '%':
             return Number(a % b)
         if self.op == '==':
-            return Number(a == b)
+            if a == b:
+                return Number(1)
+            else:
+                return Number(0)
         if self.op == '!=':
-            return Number(a != b)
+            if a != b:
+                return Number(1)
+            else:
+                return Number(0)
         if self.op == '<':
-            return Number(a < b)
+            if a < b:
+                return Number(1)
+            else:
+                return Number(0)
         if self.op == '>':
-            return Number(a > b)
+            if a > b:
+                return Number(1)
+            else:
+                return Number(0)
         if self.op == '<=':
-            return Number(a <= b)
+            if a <= b:
+                return Number(1)
+            else:
+                return Number(0)
         if self.op == '>=':
-            return Number(a >= b)
+            if a >= b:
+                return Number(1)
+            else:
+                return Number(0)
         if self.op == '&&':
             if a == Number(0) or b == Number(0):
                 return Number(0)
@@ -181,25 +199,25 @@ if __name__ == "__main__":
     parent[4] = Number(7)
     con1 = BinaryOperation(parent[1], '>', parent[1])
     BO1 = BinaryOperation(parent[1], '*', parent[2])
-    BO2 = BinaryOperation(parent[3], '+', parent[4])
+    BO2 = BinaryOperation(parent[3], '==', parent[4])
     UO1 = UnaryOperation('!', BO2)
     print(UO1.evaluate(parent).val)
     CON = Conditional(con1, [], [])
     print(CON.evaluate(parent).val)
     func = Function([parent[1], parent[2]], [BO1, BO2])
-    f1 = FunctionDefinition(Number(1), func)
+    f1 = FunctionDefinition('1', func)
     f1.evaluate(parent)
     p = Print(parent['f1'])
     r = Reference('f1')
     son = Scope(parent)
     son['f2'] = Number(4)
-    r2 = Reference(Number(1))
+    r2 = Reference('1')
     print(r2.evaluate(son).evaluate(parent).val)
     grandson = Scope(son)
     grandson['f3'] = Number(3)
     r3 = Reference(2)
     print(r3.evaluate(grandson).val)
-    print(r2.evaluate(parent).val)
+    print(r2.evaluate(grandson).evaluate(parent).val)
     print(r.evaluate(parent).evaluate(parent).val)
     p.evaluate(parent)
 
