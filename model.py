@@ -1,14 +1,13 @@
-class Scope(object):
+class Scope:
     def __init__(self, parent=None):
         self.parent = parent
 
     def __getitem__(self, key):
-        if key in self.__dict__:
+        if self.__dict__.__contains__(key):
             return self.__dict__[key]
         else:
-            if self.parent is not None:
-                return self.parent.__getitem__(key)
-            return Number(42)
+            if self.parent:
+                return self.parent[key]
 
     def __setitem__(self, key, value):
         self.__dict__[key] = value
@@ -50,23 +49,20 @@ class Conditional:
         self.true = if_true
         self.false = if_false
 
+    def __evaluate_path(self, path, scope):
+        if path:
+            a = Number(42)
+            for op in path:
+                a = op.evaluate(scope)
+            return a
+        else:
+            return Number(42)
+
     def evaluate(self, scope):
         if self.condition.evaluate(scope).val == 0:
-            if self.false is not None:
-                a = Number(42)
-                for op in self.false:
-                    a = op.evaluate(scope)
-                return a
-            else:
-                return Number(42)
+            return self.__evaluate_path(self.false, scope)
         else:
-            if self.true is not None:
-                a = Number(42)
-                for op in self.true:
-                    a = op.evaluate(scope)
-                return a
-            else:
-                return Number(42)
+            return self.__evaluate_path(self.true, scope)
 
 
 class Print:
@@ -74,8 +70,9 @@ class Print:
         self.expr = expr
 
     def evaluate(self, scope):
-        print(self.expr.evaluate(scope).val)
-        return self.expr.evaluate(scope)
+        a = self.expr.evaluate(scope)
+        print(a.val)
+        return a
 
 
 class Read:
@@ -83,8 +80,8 @@ class Read:
         self.name = name
 
     def evaluate(self, scope):
-        Num = Number(int(input()))
-        scope[self.name] = Num
+        num = Number(int(input()))
+        scope[self.name] = num
         return scope[self.name]
 
 
@@ -96,11 +93,9 @@ class FunctionCall:
     def evaluate(self, scope):
         function = self.fun_expr.evaluate(scope)
         call_scope = Scope(scope)
-        k = 0
-        for arg in function.args:
-            op = self.args[k]
-            k += 1
-            call_scope[arg] = op.evaluate(scope)
+        for i in range(len(function.args)):
+            op = self.args[i]
+            call_scope[function.args[i]] = op.evaluate(scope)
 
         return function.evaluate(call_scope)
 
@@ -122,56 +117,13 @@ class BinaryOperation:
     def evaluate(self, scope):
         a = self.lhs.evaluate(scope).val
         b = self.rhs.evaluate(scope).val
-        if self.op == '+':
-            return Number(a + b)
-        if self.op == '-':
-            return Number(a - b)
-        if self.op == '*':
-            return Number(a * b)
-        if self.op == '/':
-            return Number(a // b)
-        if self.op == '%':
-            return Number(a % b)
-        if self.op == '==':
-            if a == b:
-                return Number(1)
-            else:
-                return Number(0)
-        if self.op == '!=':
-            if a != b:
-                return Number(1)
-            else:
-                return Number(0)
-        if self.op == '<':
-            if a < b:
-                return Number(1)
-            else:
-                return Number(0)
-        if self.op == '>':
-            if a > b:
-                return Number(1)
-            else:
-                return Number(0)
-        if self.op == '<=':
-            if a <= b:
-                return Number(1)
-            else:
-                return Number(0)
-        if self.op == '>=':
-            if a >= b:
-                return Number(1)
-            else:
-                return Number(0)
-        if self.op == '&&':
-            if a == Number(0) or b == Number(0):
-                return Number(0)
-            else:
-                return Number(1)
-        if self.op == '||':
-            if a == Number(0) and b == Number(0):
-                return Number(0)
-            else:
-                return Number(1)
+        ops = {'+': lambda a, b: a + b, '*': lambda a, b: a * b, '-': lambda a, b: a - b, '/': lambda a, b: a // b,
+               '>': lambda a, b: int(a > b),
+               '==': lambda a, b: int(a == b), '<=': lambda a, b: int(a <= b), '%': lambda a, b: a % b,
+               '!=': lambda a, b: int(a != b), '<': lambda a, b: int(a < b),
+               '>=': lambda a, b: int(a >= b), '&&': lambda a, b: int(a and b),
+               '||': lambda a, b: int(a or b)}
+        return Number(ops[self.op](a, b))
 
 
 class UnaryOperation:
@@ -181,13 +133,8 @@ class UnaryOperation:
 
     def evaluate(self, scope):
         a = self.expr.evaluate(scope).val
-        if self.op == '-':
-            return Number(-a)
-        if self.op == '!':
-            if a == Number(0):
-                return Number(1)
-            else:
-                return Number(0)
+        ops = {'!': lambda a: int(not a), '-': lambda a: -a}
+        return Number(ops[self.op](a))
 
 
 if __name__ == "__main__":
@@ -196,28 +143,27 @@ if __name__ == "__main__":
     r.evaluate(parent)
     parent[2] = Number(1)
     parent[3] = Number(6)
-    parent[4] = Number(7)
-    con1 = BinaryOperation(parent[1], '>', parent[1])
+    parent[4] = Number(1)
+    con1 = BinaryOperation(parent[3], '>', parent[1])
     BO1 = BinaryOperation(parent[1], '*', parent[2])
-    BO2 = BinaryOperation(parent[3], '==', parent[4])
+    BO2 = BinaryOperation(parent[4], '+', parent[4])
     UO1 = UnaryOperation('!', BO2)
-    print(UO1.evaluate(parent).val)
-    CON = Conditional(con1, [], [])
+    CON = Conditional(con1, [UO1])
     print(CON.evaluate(parent).val)
     func = Function([parent[1], parent[2]], [BO1, BO2])
-    f1 = FunctionDefinition('1', func)
+    f1 = FunctionDefinition(1, func)
     f1.evaluate(parent)
-    p = Print(parent['f1'])
-    r = Reference('f1')
+    p = Print(parent[1])
+    p.evaluate(parent)
+    p.evaluate(parent)
+    r = Reference(1)
     son = Scope(parent)
     son['f2'] = Number(4)
-    r2 = Reference('1')
+    r2 = Reference(1)
     print(r2.evaluate(son).evaluate(parent).val)
     grandson = Scope(son)
     grandson['f3'] = Number(3)
     r3 = Reference(2)
-    print(r3.evaluate(grandson).val)
-    print(r2.evaluate(grandson).evaluate(parent).val)
     print(r.evaluate(parent).evaluate(parent).val)
     p.evaluate(parent)
 
