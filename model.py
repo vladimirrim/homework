@@ -1,16 +1,17 @@
 class Scope:
     def __init__(self, parent=None):
         self.parent = parent
+        self.dict = {}
 
     def __getitem__(self, key):
-        if self.__dict__.__contains__(key):
-            return self.__dict__[key]
+        if key in self.dict:
+            return self.dict[key]
         else:
             if self.parent:
                 return self.parent[key]
 
     def __setitem__(self, key, value):
-        self.__dict__[key] = value
+        self.dict[key] = value
 
 
 class Number:
@@ -109,6 +110,13 @@ class Reference:
 
 
 class BinaryOperation:
+    ops = {'+': lambda a, b: a + b, '*': lambda a, b: a * b, '-': lambda a, b: a - b, '/': lambda a, b: a // b,
+           '>': lambda a, b: int(a > b),
+           '==': lambda a, b: int(a == b), '<=': lambda a, b: int(a <= b), '%': lambda a, b: a % b,
+           '!=': lambda a, b: int(a != b), '<': lambda a, b: int(a < b),
+           '>=': lambda a, b: int(a >= b), '&&': lambda a, b: int(a and b),
+           '||': lambda a, b: int(a or b)}
+
     def __init__(self, lhs, op, rhs):
         self.lhs = lhs
         self.op = op
@@ -117,24 +125,19 @@ class BinaryOperation:
     def evaluate(self, scope):
         a = self.lhs.evaluate(scope).val
         b = self.rhs.evaluate(scope).val
-        ops = {'+': lambda a, b: a + b, '*': lambda a, b: a * b, '-': lambda a, b: a - b, '/': lambda a, b: a // b,
-               '>': lambda a, b: int(a > b),
-               '==': lambda a, b: int(a == b), '<=': lambda a, b: int(a <= b), '%': lambda a, b: a % b,
-               '!=': lambda a, b: int(a != b), '<': lambda a, b: int(a < b),
-               '>=': lambda a, b: int(a >= b), '&&': lambda a, b: int(a and b),
-               '||': lambda a, b: int(a or b)}
-        return Number(ops[self.op](a, b))
+        return Number(self.ops[self.op](a, b))
 
 
 class UnaryOperation:
+    ops = {'!': lambda a: int(not a), '-': lambda a: -a}
+
     def __init__(self, op, expr):
         self.op = op
         self.expr = expr
 
     def evaluate(self, scope):
         a = self.expr.evaluate(scope).val
-        ops = {'!': lambda a: int(not a), '-': lambda a: -a}
-        return Number(ops[self.op](a))
+        return Number(self.ops[self.op](a))
 
 
 if __name__ == "__main__":
@@ -143,7 +146,7 @@ if __name__ == "__main__":
     r.evaluate(parent)
     parent[2] = Number(1)
     parent[3] = Number(6)
-    parent[4] = Number(1)
+    parent[4] = Number(8)
     con1 = BinaryOperation(parent[3], '>', parent[1])
     BO1 = BinaryOperation(parent[1], '*', parent[2])
     BO2 = BinaryOperation(parent[4], '+', parent[4])
